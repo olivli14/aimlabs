@@ -79,11 +79,10 @@ export default function Home() {
   })
  
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
-  }
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log("Form submitted:", values);
+    alert(`High score submitted: ${values.highScore}`);
+  };
 
   const incrementTotalClicks = () => {
     setTotalClicks(totalClicks + 1); // Increment total click count
