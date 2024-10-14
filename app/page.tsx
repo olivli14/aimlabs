@@ -1,101 +1,191 @@
-import Image from "next/image";
+"use client";
+import React, { useState, useEffect } from "react";
+import RandomButton from "./elements/randomButton";
+import MoreButton from "./elements/moreButton";
+import LessButton from "./elements/lessButton";
+import RoundsTimer from './elements/inputTime';
+
+
+
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart"
+
+export const description = "A linear area chart"
+
+const chartConfig = {
+  desktop: {
+    label: "Clicks",
+    color: "hsl(var(--chart-1))",
+  },
+} satisfies ChartConfig
+
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [totalClicks, setTotalClicks] = useState<number>(0);
+  const [clicksPerRound, setClicksPerRound] = useState<number[]>([]);
+  const [chartData, setChartData] = useState<{ round: string, clicks: number} []>([]);
+  const [numButtons, setNumButtons] = useState(5);
+  //start with five buttons bc usually in val or csgo the enemy team is 5
+  const [buttons, setButtons] = useState<number[]>([]);
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+  
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const incrementTotalClicks = () => {
+    setTotalClicks(totalClicks + 1); // Increment total click count
+  };
+
+  useEffect(() => {
+    // Create an array of button IDs based on the number of buttons
+    const buttonArray = Array.from({ length: numButtons }, (_, index) => index);
+    setButtons(buttonArray); // Populate the button array
+  }, [numButtons]); // Re-run when numButtons changes
+
+  const handleMoreButtonClick = () => {
+    setNumButtons((prev) => prev + 1); // Increase the number of buttons by 1
+  };
+  const handleLessButtonClick = () => {
+    setNumButtons((prev) => prev - 1); // Increase the number of buttons by 1
+  };
+
+  // This function is called when a round is complete
+  const handleRoundComplete = () => {
+    // Add the current totalClicks to the clicksPerRound array
+    setClicksPerRound((prev) => [...prev, totalClicks]);
+
+    //update chart data with new round and clicks
+    setChartData((prevData) => [
+      ...prevData,
+      { round: `Round ${prevData.length + 1}`, clicks: totalClicks },
+    ]);
+
+    // Reset the totalClicks for the new round
+    setTotalClicks(0);
+  };
+
+  
+
+  return (
+    <div className="flex flex-col">
+      <Card >
+        <CardHeader>
+          <CardTitle>Aim Train</CardTitle>
+        </CardHeader>
+        
+      </Card> 
+      <div>
+        <RoundsTimer onRoundComplete={handleRoundComplete}/>
+      </div>
+      
+        
+   
+      
+        
+      <div className="bg-[#d3eaed] my-3 mr-3 ml-3 rounded-md">
+        <div
+          ref={containerRef}
+          className="relative w-full h-[500px] bg-[#16274f]-100 mr-3 ml-3 mt-3 mb-3"
+        >
+          {buttons.map((buttonId) => (
+            <RandomButton
+              key={buttonId}
+              id={buttonId}
+              onIncrement={incrementTotalClicks}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          ))}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <Card className="bg-[#d3eaed] border=[#d3eaed]">
+          <CardHeader>
+            <CardTitle></CardTitle>
+          </CardHeader>
+          
+        </Card>
+        
+        
+
+      </div>
+      <div className="relative mt-7">
+        <div className="relative justify-center items-center space-x-8 mt-5 bg-[#d3eaed]">
+              
+          <MoreButton onClick={handleMoreButtonClick} />
+          <LessButton onClick={handleLessButtonClick} />    
+        </div>
+
+      </div>
+      
+
+      
+      
+      
+
+      <div className="mt-4 mb-4 ml-4 mr-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Stats</CardTitle>
+            <CardDescription>
+              Total clicks per round
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfig}>
+              <AreaChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  left: 12,
+                  right: 12,
+                }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="round"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                />
+                <YAxis />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="dot" hideLabel />}
+                />
+                <Area
+                  dataKey="clicks"
+                  type="linear"
+                  fill="var(--color-desktop)"
+                  fillOpacity={0.4}
+                  stroke="var(--color-desktop)"
+                />
+              </AreaChart>
+            </ChartContainer>
+          </CardContent>
+
+          <CardFooter>
+            <div className="flex w-full items-start gap-2 text-sm">
+              <div className="grid gap-2">
+                <div className="flex items-center gap-2 leading-none text-muted-foreground">
+                  Round 1 - Round {chartData.length}
+                </div>
+              </div>
+            </div>
+          </CardFooter>
+        </Card>
+          
+
+      </div>
+      
     </div>
+    
   );
 }
