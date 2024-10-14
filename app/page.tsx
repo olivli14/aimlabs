@@ -23,7 +23,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
-export const description = "A linear area chart"
+//export const description = "A linear area chart"
 
 const chartConfig = {
   desktop: {
