@@ -41,10 +41,14 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
  
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-})
+  highScore: z
+    .number({
+      required_error: "High score is required",
+      invalid_type_error: "High score must be a number",
+    })
+    .positive("High score must be greater than 0")
+    .int("High score must be an integer"),
+});
 
 
 
@@ -70,7 +74,7 @@ export default function Home() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      highScore: 0,
     },
   })
  
@@ -228,15 +232,15 @@ export default function Home() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
-            name="username"
+            name="highScore"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Highscore</FormLabel>
                 <FormControl>
-                  <Input placeholder="shadcn" {...field} />
+                  <Input placeholder="high score" type='number'{...field} />
                 </FormControl>
                 <FormDescription>
-                  This is your public display name.
+                  This is your high score
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -244,7 +248,7 @@ export default function Home() {
           />
           <Button type="submit">Submit</Button>
         </form>
-    </Form>
+      </Form>
       
     </div>
     
