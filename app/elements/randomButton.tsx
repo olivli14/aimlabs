@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 
 
+
 interface RandomButtonProps {
   //id: number; // Button ID for unique identification
   onIncrement: ()=> void;
+  id: number;
 }
 
-const RandomButton: React.FC<RandomButtonProps> = ({ onIncrement}) => {
+const RandomButton: React.FC<RandomButtonProps> = ({ id, onIncrement}) => {
   const [clickCount, setClickCount] = useState<number>(0);
   const [position, setPosition] = useState({ top: Math.floor(Math.random() * 90) + "%", left: Math.floor(Math.random() * 90) + "%" });
   //initial random position
